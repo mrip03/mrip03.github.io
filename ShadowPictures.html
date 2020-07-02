@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>图片隐写术</title>
+		<script type="text/javascript" src="crypto-js.js"></script>
+		<script type="text/javascript" src="shadowpics.js"></script>
+		<script type="text/javascript">
+			function makePicAndDownload(){
+				var str=document.getElementById("mystr").value;
+				if(document.getElementById("pwd").value=""){
+					var pswd=null;
+				} else {
+					var pswd=document.getElementById("pwd").value;
+				}
+				if(document.getElementById("avatar").files.length>0){
+				    var myfile=document.getElementById("avatar").files[0];
+				} else {
+					return 0;
+				}
+				readPng(myfile,function(e){
+					var imdt=e;
+				    var resURL=writePng(encode2imagedata(str,imdt,pswd));
+				    const elt = document.createElement('a');
+				    elt.setAttribute('href',resURL);
+				    elt.setAttribute('download','encoded.png');
+				    elt.style.display = 'none';
+				    document.body.appendChild(elt);
+				    elt.click();
+				    document.body.removeChild(elt);						
+				});
+			}
+			function loadTextInPic(){
+				if(document.getElementById("pwd2").value=""){
+					var pswd=null;
+				} else {
+					var pswd=document.getElementById("pwd2").value;
+				}
+				if(document.getElementById("avatar2").files.length>0){
+				    var myfile=document.getElementById("avatar2").files[0];
+					readPng(myfile,function(e){
+						var imdt=e;
+						var str=decode2string(imdt,pswd);
+						document.getElementById("displayer").value=str;
+					});
+				} else {
+					return 0;
+				}
+			}
+			function copyContent(){
+				let transfer = document.createElement('input');
+				document.body.appendChild(transfer);
+			    transfer.value = document.getElementById("displayer").value;
+				transfer.focus();
+				transfer.select();
+				if (document.execCommand('copy')) {
+				    document.execCommand('copy');
+				}
+				transfer.blur();
+				document.body.removeChild(transfer);
+			}
+		</script>
+	</head>
+	<body>
+		<h1>图片隐写术</h1>
+		<div style="width: 100%;">
+			<div style="width: 50%; float: left;">
+			<p>请输入你要隐藏的文字：</p>
+		    <textarea id="mystr" rows="10" cols="20">我们一起学猫叫，一起喵喵喵喵喵</textarea>
+		    <p>请选择图片：</p>
+            <input type="file"
+                id="avatar" name="avatar"
+                accept="image/png,image/jpg,image/jpeg">
+			<br />
+		    <label for="pwd">请输入密码（可选）：</label>
+		    <input type="password" id="pwd"><br /> <br />
+			<button id="download" type="button" onclick="makePicAndDownload()">下载隐写图片</button>
+			<img id="default" src="mycat.png" style="display: none;" />
+			<canvas id="canvas1" style="display: none;width: 1000;height:1000;"></canvas>
+			</div>
+			<div style="width: 50%; float: left;">
+			<p>请选择隐写图片：</p>
+            <input type="file"
+                id="avatar2" name="avatar2"
+                accept="image/png,image/jpg,image/jpeg">
+			<br />
+		    <label for="pwd2">请输入密码（可选）：</label>
+		    <input type="password" id="pwd2"><br /> <br />
+			<button id="viewcontent" type="button" onclick="loadTextInPic()">显示图片中隐藏的文本</button>
+			<button id="copycontent" type="button" onclick="copyContent()">复制文本</button>			
+			<br /> <br />
+			<textarea id="displayer" rows="10" cols="20" readonly="readonly"></textarea>
+			</div>
+		</div>
+	</body>
+</html>
